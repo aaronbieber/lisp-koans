@@ -50,8 +50,23 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (if (< (length dice) 1) (return-from score 0))
+  (let ((ret 0)
+        (run 0)
+        (prev 0))
+    (dolist (n dice)
+      (if (= n prev)
+          (incf run 1)
+        (setf run 0))
+      (cond ((= run 2)
+             (cond ((= n 1) (incf ret 800))
+                   ((= n 5) (incf ret 400))
+                   (t (incf ret (* n 100))))
+             (setf run 0))
+            ((= n 1) (incf ret 100))
+            ((= n 5) (incf ret 50)))
+      (setf prev n))
+    ret))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
@@ -81,5 +96,5 @@
     (assert-equal 600  (score '(6 6 6))))
 
 (define-test test-score-of-mixed-is-sum
-    (assert-equal 250  (score '(2 5 2 2 3)))
+    (assert-equal 150  (score '(2 5 2 2 1)))
     (assert-equal 550  (score '(5 5 5 5))))
